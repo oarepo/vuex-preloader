@@ -1,34 +1,62 @@
 {
   "name": "@oarepo/preloader",
   "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "bili  --plugins.vue --format esm --no-plugin.babel --verbose src/library.js"
-  },
-  "dependencies": {
-    "core-js": "^3.3.2",
-    "vue": "^2.6.10",
-    "vue-router": "^3.1.3",
-    "vuex": "^3.1.2"
+  "main": "index.esm.js",
+  "license": "MIT",
+  "peerDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "rollup": "^1.14.6",
+    "sanitize-html": "^1.20.0",
+    "vue-class-component": "^6.3.2",
+    "vue-property-decorator": "^7.3.0",
+    "vue-runtime-helpers": "^1.0.1",
+    "vuex-class-modules": "^1.0.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.0.0",
-    "@vue/cli-service": "^4.0.0",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@vue/eslint-config-prettier": "^5.0.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "babel-eslint": "^10.0.1",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-vue": "^2.0.2",
-    "bili": "^4.8.1",
-    "rollup-plugin-vue": "^5.1.2",
+    "bili": "^4.8.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-cypress": "^2.2.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-vue": "^5.2.2",
+    "glob": "^7.1.4",
+    "postcss": "^7.0.17",
+    "rollup-plugin-vue": "^5.0.0",
+    "set-value": "^3.0.1",
     "vue-template-compiler": "^2.6.10"
   },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
+  "description": "Preloader library (not only) for OARepo",
+  "directories": {
+    "test": "tests"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ]
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "vue-cli-service server",
+    "build": "rm -rf dist; bili -c bili.config.js src/library.js --plugins.vue --format esm && cp package.json dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oarepo/oarepo-preloader.git"
+  },
+  "keywords": [
+    "vuejs",
+    "ui",
+    "oarepo",
+    "invenio",
+    "components"
+  ],
+  "author": "Miroslav Simek <simeki@vscht.cz>",
+  "bugs": {
+    "url": "https://github.com/oarepo/oarepo-preloader/issues"
+  },
+  "homepage": "https://github.com/oarepo/oarepo-preloader#readme"
 }
