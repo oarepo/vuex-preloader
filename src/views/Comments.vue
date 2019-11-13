@@ -1,7 +1,7 @@
 <template>
 <div class="home">
     <h2>Comments</h2>
-    {{ inst }}
+    Still have to find a way of passing isolated store name to component
 </div>
 </template>
 
@@ -13,7 +13,6 @@ export default {
     name: 'home',
     components: {},
     computed: {
-        inst: () => this
     }
 }
 </script>
