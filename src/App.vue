@@ -1,12 +1,13 @@
 <template>
 <div id="app">
     <div id="nav">
-        <router-link to="/">Home</router-link>
-        |
-        <router-link to="/about/aa">About</router-link>
+        <router-link to="/">Back to articles</router-link>
     </div>
-    {{ $store.state }}
+    <hr>
     <router-view/>
+    <hr>
+    <h2>Store state</h2>
+    <pre>{{ $store.state }}</pre>
 </div>
 </template>
 
@@ -15,12 +16,12 @@
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
     color: #2c3e50;
 }
 
 #nav {
     padding: 30px;
+    float: right;
 }
 
 #nav a {

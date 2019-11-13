@@ -6,7 +6,9 @@ import { registerPreloader } from './library/preloader'
 
 Vue.config.productionTip = false
 
-registerPreloader(router, store)
+registerPreloader(router, store, {
+  injection: true
+})
 
 new Vue({
   router,

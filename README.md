@@ -10,6 +10,12 @@ of matched route segments (all the way up to the root). For each of the
 preloader segment it calls ``load`` method on the appropriate store. The methods
 are called in the order from the root down to the end of the matched path.
 
+## Installation
+
+```bash
+yarn add @oarepo/vuex-preloader
+```
+
 ## Configuration
 
 In main.js/quasar boot, register the preloader: 
@@ -22,7 +28,7 @@ function errorHandler({router, route, pathSegment, exception}) {
     return '/error/404'
 }
 
-registerPreloader(router, store, erorrHandler)
+registerPreloader(router, store, {erorrHandler, debug: true})
 ```  
 
 In routes, add the ``meta`` sections:
@@ -104,6 +110,23 @@ The handler can return:
       for communicating the error and/or calling ``router.navigate``
    * ``new route`` to use it as the ``next`` url - page will be changed to this
      (for example, 404 page) 
+
+## Store name injection
+
+*In progress, does not work yet*
+
+The library can also inject actual store name and additional properties into the component
+responsible for the path segment. To use this functionality (for example in case of isolated
+stores), register:
+
+```javascript
+
+registerPreloader(router, store, erorrHandler, {injection: true})
+
+```
+
+Implicitly ``storeName`` is injected into the component's props. When using isolated factory,
+all properties returned by the factory are injected as well.
 
 ## Project setup
 ```

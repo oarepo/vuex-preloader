@@ -1,18 +1,25 @@
 <template>
 <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Articles</h1>
+    <div v-if="!loaded">Loading ...</div>
+    <div v-for="article of articles" :key="article.code">
+        <router-link :to="{name: 'article', params: {articleId: article.code}}">{{article.title}}</router-link>
+    </div>
 </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+
+import { mapState } from 'vuex'
 
 export default {
     name: 'home',
-    components: {
-        HelloWorld
+    components: {},
+    computed: {
+        ...mapState('articles', {
+            loaded: state => state.loaded,
+            articles: state => state.articles
+        })
     }
 }
 </script>

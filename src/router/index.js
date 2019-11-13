@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-
-import { registerPreloader } from '../library'
+import Article from '../views/Article.vue'
+import Comments from '../views/Comments.vue'
+import {commentStoreFactory} from '../store/comments'
 
 Vue.use(VueRouter)
 
@@ -13,22 +14,35 @@ const routes = [
         component: Home,
         meta: {
             preloader: {
-                'store': 'a'
+                'store': 'articles',
+            }
+        },
+        props: true
+    },
+    {
+        path: '/:articleId',
+        name: 'article',
+        component: Article,
+        meta: {
+            preloader: {
+                'store': 'article',
+                'action': 'loadArticle',
+                'params': {
+                    articleId: 'id'
+                }
             }
         },
         children: [
             {
-                path: '/about/:tid',
-                name: 'about',
-                // route level code-splitting
-                // this generates a separate chunk (about.[hash].js) for this route
-                // which is lazy-loaded when the route is visited.
-                component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+                path: 'comments',
+                name: 'comments',
+                component: Comments,
                 meta: {
                     preloader: {
-                        'store': 'b',
+                        'isolated': commentStoreFactory,
+                        'action': 'loadComments',
                         'params': {
-                            tid: 'id'
+                            articleId: 'articleId'
                         }
                     }
                 }

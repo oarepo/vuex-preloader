@@ -41,12 +41,12 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "vue-cli-service serve",
+    "serve": "vue-cli-service serve",
     "build": "rm -rf dist; bili -c bili.config.js src/library.js --plugins.vue --format esm && cp package.json dist/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oarepo/oarepo-preloader.git"
+    "url": "git+https://github.com/oarepo/vuex-preloader.git"
   },
   "keywords": [
     "vuejs",
@@ -57,9 +57,9 @@
   ],
   "author": "Miroslav Simek <simeki@vscht.cz>",
   "bugs": {
-    "url": "https://github.com/oarepo/oarepo-preloader/issues"
+    "url": "https://github.com/oarepo/vuex-preloader/issues"
   },
-  "homepage": "https://github.com/oarepo/oarepo-preloader#readme",
+  "homepage": "https://github.com/oarepo/vuex-preloader#readme",
   "dependencies": {
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
