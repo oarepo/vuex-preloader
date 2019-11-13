@@ -1,5 +1,5 @@
 {
-  "name": "@oarepo/preloader",
+  "name": "@oarepo/vuex-preloader",
   "version": "1.0.0",
   "main": "index.esm.js",
   "license": "MIT",

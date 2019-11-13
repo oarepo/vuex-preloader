@@ -1,4 +1,4 @@
-# @oarepo/preloader
+# @oarepo/vuex-preloader
 
 ## What it does
 
@@ -15,7 +15,7 @@ are called in the order from the root down to the end of the matched path.
 In main.js/quasar boot, register the preloader: 
 
 ```javascript
-import { registerPreloader } from '@oarepo-preloader'
+import { registerPreloader } from '@oarepo/vuex-preloader'
 
 function errorHandler({router, route, pathSegment, exception}) { 
     console.error('Exception detected')
