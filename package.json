@@ -1,6 +1,6 @@
 {
   "name": "@oarepo/vuex-preloader",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "vuex-preloader-library.esm.js",
   "license": "MIT",
   "peerDependencies": {
