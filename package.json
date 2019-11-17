@@ -1,6 +1,6 @@
 {
   "name": "@oarepo/vuex-preloader",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "vuex-preloader-library.esm.js",
   "license": "MIT",
   "peerDependencies": {
@@ -42,7 +42,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "vue-cli-service serve",
-    "build": "rm -rf dist; bili -c bili.config.js src/library.js --plugins.vue --format esm --file-name vuex-preloader-library.esm.js && cp package.json dist/"
+    "build": "rm -rf dist; bili -c bili.config.js src/library.js --plugins.vue --format esm --file-name vuex-preloader-library.esm.js && cp package.json dist/ && cp README.md dist/"
   },
   "repository": {
     "type": "git",
