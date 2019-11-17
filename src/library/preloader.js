@@ -12,6 +12,9 @@ function extractActionParams (preloader, match, route) {
             ...route.params
         }
     }
+    if (preloader.query) {
+        actionParams['query'] = route.query
+    }
     return actionParams
 }
 
@@ -35,8 +38,8 @@ const registerPreloader = function (router, store, {
     }
 
     async function beforeEachHandler (to, from, next) {
-        const newActionParams = {}
         const storedActionParams = storedActionParamsContainer[0]
+        const newActionParams = { ...storedActionParams }
         for (const match of to.matched) {
             const preloader = match.meta && match.meta.preloader
             let injects = {}
@@ -45,13 +48,26 @@ const registerPreloader = function (router, store, {
 
                 const name = match.name
                 const reload = preloader.reload || false
+                let storeModule = preloader.store || ''
 
                 if (name) {
                     const serializedParams = JSON.stringify(actionParams)
+                    if (debug) {
+                        console.log('checking if reload is needed: serialized params ',
+                            serializedParams, 'stored params', storedActionParams[name],
+                            'reload', reload)
+                    }
                     if (!reload && storedActionParams[name] !== undefined) {
                         if (storedActionParams[name] === serializedParams) {
-                            newActionParams[name] = storedActionParams[name]
-                            continue        // skip reloading
+                            let storeState = store.state
+                            if (storeModule.length) {
+                                storeState = storeState[storeModule]
+                            }
+                            const reloadNeeded = storeState['reloadNeeded']
+                            if (!reloadNeeded) {
+                                newActionParams[name] = storedActionParams[name]
+                                continue        // skip reloading
+                            }
                         }
                     }
                     newActionParams[name] = serializedParams
@@ -62,7 +78,6 @@ const registerPreloader = function (router, store, {
                 }
 
                 const action = preloader.action || 'load'
-                let storeModule = preloader.store || ''
                 const isolated = preloader.isolated || ''
                 if (isolated) {
                     const storeModuleDef = await isolated({ store, match, route: to, router })
@@ -79,7 +94,7 @@ const registerPreloader = function (router, store, {
                     injects['storeModule'] = storeModule
                     const namespacedAction = storeModule ? `${storeModule}/${action}` : action
                     if (debug) {
-                        console.log('dispatch', namespacedAction, actionParams)
+                        console.log('dispatch', namespacedAction, actionParams, 'from', from, 'to', to)
                     }
                     await store.dispatch(namespacedAction, actionParams)
                 } catch (e) {

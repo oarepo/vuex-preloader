@@ -28,7 +28,7 @@ function errorHandler({router, route, pathSegment, exception}) {
     return '/error/404'
 }
 
-registerPreloader(router, store, {erorrHandler, debug: true})
+registerPreloader(router, store, {errorHandler, debug: true})
 ```  
 
 In routes, add the ``meta`` sections:
