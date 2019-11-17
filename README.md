@@ -99,10 +99,10 @@ Parameters inside ``meta.preloader``:
    * ``reload`` - if set to ``true``, always dispatch the ``action``. 
       If set to ``false`` (default), dispatch the ``action`` only when the parameters
       to the ``action`` call have changed.
-   * ``expiration`` - if set, store will be reloaded (if the url is refreshed) 
-      after this time (in seconds)
-   * ``reloadInterval`` - if set, store will be reloaded automatically if
-      the route matches
+   * ``expiration`` - if set, store will not be reloaded if expiration (in seconds) 
+      has not passed since the last load
+   * ``reloadInterval`` - if set, store will be reloaded automatically each reloadInterval
+     (if the path still matches)
 
       
 
