@@ -29,7 +29,8 @@ const routes = [
                 'action': 'loadArticle',
                 'params': {
                     articleId: 'id'
-                }
+                },
+                'expiration': 20
             }
         },
         children: [
@@ -43,7 +44,8 @@ const routes = [
                         'action': 'loadComments',
                         'params': {
                             articleId: 'articleId'
-                        }
+                        },
+                        'reloadInterval': 5
                     }
                 }
             }

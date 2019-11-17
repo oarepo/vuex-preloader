@@ -5,7 +5,9 @@ function commentStoreFactory ({ store }) {
         namespaced: true,
         state: {
             loaded: false,
-            comments: []
+            comments: [],
+            loadedCount: 0,
+            loadedAt: null
         },
         mutations: {
             loading (state) {
@@ -14,6 +16,8 @@ function commentStoreFactory ({ store }) {
             loaded (state, { comments }) {
                 state.loaded = true
                 state.comments = comments
+                state.loadedCount++
+                state.loadedAt = new Date()
             }
         },
         actions: {

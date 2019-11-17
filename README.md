@@ -31,7 +31,7 @@ function errorHandler({router, route, pathSegment, exception}) {
 registerPreloader(router, store, {errorHandler, debug: true})
 ```  
 
-In routes, add the ``meta`` sections:
+In routes, make sure that *routes are named* and add the ``meta`` sections:
 
 ```javascript
 const routes = [
@@ -98,8 +98,13 @@ Parameters inside ``meta.preloader``:
       ``action``.    
    * ``reload`` - if set to ``true``, always dispatch the ``action``. 
       If set to ``false`` (default), dispatch the ``action`` only when the parameters
-      to the ``action`` call have changed. Note: to use this feature a ``name`` must be
-      set on the segment. 
+      to the ``action`` call have changed.
+   * ``expiration`` - if set, store will be reloaded (if the url is refreshed) 
+      after this time (in seconds)
+   * ``reloadInterval`` - if set, store will be reloaded automatically if
+      the route matches
+
+      
 
 The path is changed only if all actions succeed in loading. If they do not,
 an error handler is called with object ``{router, route, pathSegment, exception}``.
@@ -110,6 +115,31 @@ The handler can return:
       for communicating the error and/or calling ``router.navigate``
    * ``new route`` to use it as the ``next`` url - page will be changed to this
      (for example, 404 page) 
+
+## Reloading
+
+In the default settings, store is only reloaded if the params for the fetch
+method have changed (i.e. the params in the url for the given route has changed). 
+This setting can be overridden on many levels:
+
+``reload``
+
+if this option is set to true, the store will reload anytime the url is hit
+
+``expiration``
+
+if this option is set, the reload will happen on url change whenever
+the current time is greater than the time of the last fetch + expiration.
+
+``reloadInterval``
+
+if the route is shown to the user, the store will reload every ``reloadInterval``
+seconds
+
+``store.reloadNeeded``
+
+additionally if there is a property on the store called ``reloadNeeded`` and
+it is set to true, the store will be reloaded when the url is hit.
 
 ## Store name injection
 

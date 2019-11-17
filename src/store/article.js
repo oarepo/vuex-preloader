@@ -2,7 +2,9 @@ const moduleArticle = {
     namespaced: true,
     state: {
         loaded: false,
-        item: null
+        item: null,
+        loadedCount: 0,
+        loadedAt: null
     },
     mutations: {
         loading (state) {
@@ -11,6 +13,8 @@ const moduleArticle = {
         loaded (state, { item }) {
             state.loaded = true
             state.item = item
+            state.loadedCount++
+            state.loadedAt = new Date()
         }
     },
     actions: {
