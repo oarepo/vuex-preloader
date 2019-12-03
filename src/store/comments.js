@@ -1,5 +1,6 @@
 function commentStoreFactory ({ store }) {
-    const name = `comments-${Math.random()}`
+    const name = `comments_${Math.floor(Math.random() * 100000)}`
+    console.log('Registering store', name)
     store.registerModule(name, {
         // module declaration
         namespaced: true,
@@ -22,17 +23,20 @@ function commentStoreFactory ({ store }) {
         },
         actions: {
             loadComments (context, { articleId }) {
-                context.commit('loading')
-                setTimeout(() => {
-                    context.commit('loaded',
-                        {
-                            comments: [
-                                `first comment on article ${articleId}`,
-                                `second comment on article ${articleId}`,
-                                `third comment on article ${articleId}`
-                            ]
-                        })
-                }, 1000)
+                return new Promise((resolve, reject) => {
+                    context.commit('loading')
+                    setTimeout(() => {
+                        context.commit('loaded',
+                            {
+                                comments: [
+                                    `first comment on article ${articleId}`,
+                                    `second comment on article ${articleId}`,
+                                    `third comment on article ${articleId}`
+                                ]
+                            })
+                        resolve()
+                    }, 100)
+                })
             }
         }
     })

@@ -38,6 +38,7 @@ const routes = [
                 path: 'comments',
                 name: 'comments',
                 component: Comments,
+                props: true,
                 meta: {
                     preloader: {
                         'isolated': commentStoreFactory,
@@ -45,7 +46,7 @@ const routes = [
                         'params': {
                             articleId: 'articleId'
                         },
-                        'reloadInterval': 5
+                        'reloadInterval': 1
                     }
                 }
             }

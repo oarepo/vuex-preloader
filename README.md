@@ -83,6 +83,7 @@ is dispatched on two stores - at first on article store and then comment store -
 and after the loading has finished route is changed and ``Comments`` component
 is shown.
 
+
 Parameters inside ``meta.preloader``:
    
    * ``store`` - use this store module. If not filled, use the whole store
@@ -116,6 +117,38 @@ The handler can return:
    * ``new route`` to use it as the ``next`` url - page will be changed to this
      (for example, 404 page) 
 
+## Multiple loaders on one path
+
+The library supports multiple preloaders on a single route. Just put the loaders
+into an array, such as in:
+
+```javascript
+const routes = [
+    {
+        path: '/:articleId',
+        name: 'article',
+        component: () => Article,
+        meta: {
+            preloader: [{
+                'store': 'article',
+                'action': 'loadArticle',
+                'params': {
+                    articleId: 'id'
+                }
+            },
+            {
+                'store': 'comments',
+                'action': 'loadArticleComments',
+                'params': {
+                    articleId: 'id'
+                }
+            }]
+        }
+    }
+]
+```
+
+
 ## Reloading
 
 In the default settings, store is only reloaded if the params for the fetch
@@ -142,8 +175,6 @@ additionally if there is a property on the store called ``reloadNeeded`` and
 it is set to true, the store will be reloaded when the url is hit.
 
 ## Store name injection
-
-*In progress, does not work yet*
 
 The library can also inject actual store name and additional properties into the component
 responsible for the path segment. To use this functionality (for example in case of isolated

@@ -41,87 +41,110 @@ const registerPreloader = function (router, store, {
         }
     }
 
+    async function runPreloader (match, storedActionParams, actionParams, preloader, from, to) {
+        let injects = {}
+
+        const name = match.name
+        const reload = preloader.reload || false
+        let storeModule = preloader.store || ''
+        const expiration = preloader.expiration
+        const reloadInterval = preloader.reloadInterval
+        const action = preloader.action || 'load'
+        const isolated = preloader.isolated || ''
+
+        const key = preloader.key || [name, storeModule, action].filter(x => !!x).map(x => x.toString()).join(':')
+        if (debug) {
+            console.log(`preloader will use key ${key} for route segment`, match)
+        }
+
+        const serializedParams = JSON.stringify(actionParams)
+        if (debug) {
+            console.log('checking if reload is needed: serialized params ',
+                serializedParams, 'stored params', storedActionParams[key],
+                'reload', reload)
+        }
+        let skipReloading = !reload
+        if (storedActionParams[key] === undefined) {
+            skipReloading = false
+        } else if (storedActionParams[key] !== serializedParams) {
+            skipReloading = false
+        }
+        let storeState = store.state
+        if (storeModule.length) {
+            storeState = storeState[storeModule]
+        }
+        if (storeState['reloadNeeded']) {
+            skipReloading = false
+        }
+        if (expiration && lastLoaded[key] &&
+            new Date(lastLoaded[key].getTime() + expiration * 1000) < new Date()) {
+            skipReloading = false
+        }
+        if (skipReloading) {
+            return { [key]: storedActionParams[key] }
+        }
+
+        if (isolated) {
+            const storeModuleDef = await isolated({ store, match, route: to, router })
+            await Vue.nextTick()
+            storeModule = storeModuleDef.store
+            delete storeModuleDef[store]
+            injects = {
+                ...injects,
+                ...storeModuleDef
+            }
+            isolates[key] = storeModule
+        }
+
+        async function runReload () {
+            injects['storeModule'] = storeModule
+            const namespacedAction = storeModule ? `${storeModule}/${action}` : action
+            if (debug) {
+                console.log('dispatch', namespacedAction, actionParams, 'from', from, 'to', to)
+            }
+            await store.dispatch(namespacedAction, actionParams)
+            lastLoaded[key] = new Date()
+        }
+
+        await runReload()
+        if (reloadInterval) {
+            if (reloaderTimers[key] !== undefined) {
+                clearInterval(reloaderTimers[key])
+            }
+            reloaderTimers[key] = setInterval(runReload, reloadInterval * 1000)
+        }
+        if (injection) {
+            Object.keys(injects).forEach(k => {
+                to.params[k] = injects[k]
+            })
+        }
+        if (debug) {
+            console.log(`Called store ${name}, returning`, { [key]: serializedParams })
+        }
+        return { [key]: serializedParams }
+    }
+
     async function beforeEachHandler (to, from, next) {
         const storedActionParams = storedActionParamsContainer[0]
-        const newActionParams = { }
+        const newActionParams = {}
+        // for each route segment, check if there is a preloader and run it
         for (const match of to.matched) {
-            const preloader = match.meta && match.meta.preloader
-            let injects = {}
-            if (preloader !== undefined) {
+            const preloaders = match.meta && match.meta.preloader
+            if (preloaders === undefined) {
+                continue
+            }
+            // the ``preloaders`` are either a single object or an array. If a single object, cast it to an array
+            for (const preloader of (Array.isArray(preloaders) ? preloaders : [preloaders])) {
+
                 const actionParams = extractActionParams(preloader, match, to)
-
-                const name = match.name
-                const reload = preloader.reload || false
-                let storeModule = preloader.store || ''
-                const expiration = preloader.expiration
-                const reloadInterval = preloader.reloadInterval
-
-                if (name) {
-                    const serializedParams = JSON.stringify(actionParams)
-                    if (debug) {
-                        console.log('checking if reload is needed: serialized params ',
-                            serializedParams, 'stored params', storedActionParams[name],
-                            'reload', reload)
-                    }
-                    let skipReloading = !reload
-                    if (storedActionParams[name] === undefined) {
-                        skipReloading = false
-                    } else if (storedActionParams[name] !== serializedParams) {
-                        skipReloading = false
-                    }
-                    let storeState = store.state
-                    if (storeModule.length) {
-                        storeState = storeState[storeModule]
-                    }
-                    if (storeState['reloadNeeded']) {
-                        skipReloading = false
-                    }
-                    if (expiration && lastLoaded[name] &&
-                        new Date(lastLoaded[name].getTime() + expiration * 1000) < new Date()) {
-                        skipReloading = false
-                    }
-                    if (skipReloading) {
-                        newActionParams[name] = storedActionParams[name]
-                        continue        // skip reloading
-                    }
-                    newActionParams[name] = serializedParams
-                } else {
-                    console.error(
-                        'Preloader works only on named segments, ' +
-                        'please add a name: ... property to route segment.')
-                }
-
-                const action = preloader.action || 'load'
-                const isolated = preloader.isolated || ''
-                if (isolated) {
-                    const storeModuleDef = await isolated({ store, match, route: to, router })
-                    await Vue.nextTick()
-                    storeModule = storeModuleDef.store
-                    delete storeModuleDef[store]
-                    injects = {
-                        ...injects,
-                        ...storeModuleDef
-                    }
-                    isolates[name] = storeModule
-                }
                 try {
-                    async function runReload() {
-                        injects['storeModule'] = storeModule
-                        const namespacedAction = storeModule ? `${storeModule}/${action}` : action
-                        if (debug) {
-                            console.log('dispatch', namespacedAction, actionParams, 'from', from, 'to', to)
-                        }
-                        await store.dispatch(namespacedAction, actionParams)
-                        lastLoaded[name] = new Date()
-                    }
-                    await runReload()
-                    if (reloadInterval) {
-                        if (reloaderTimers[name] !== undefined) {
-                            clearInterval(reloaderTimers[name])
-                        }
-                        reloaderTimers[name] = setInterval(runReload, reloadInterval * 1000)
-                    }
+                    // run the preloader. It returns an object {key: actionParams} as a retval.
+                    // Extend the new action params with the retval - this way we know which actions
+                    // has been found on the path
+                    Object.assign(newActionParams,
+                        await runPreloader(match, storedActionParams, actionParams, preloader, from, to))
                 } catch (e) {
+                    // in case of error run the error handler and call its next
                     console.error(e)
                     const res = errorHandler(router, to, match, e) || false
                     if (res !== true) {
@@ -129,53 +152,48 @@ const registerPreloader = function (router, store, {
                         return
                     }
                 }
-                match.injects = injects
             }
         }
 
+        if (debug) {
+            console.log('about tpo remove isolates and timers, current action params', newActionParams)
+        }
         // clean up isolates that are no more used in path segments
-        Object.keys(isolates).forEach(name => {
-            if (newActionParams[name] === undefined) {
-                store.unregisterModule(isolates[name])
-                delete isolates[name]
+        Object.keys(isolates).forEach(key => {
+            if (newActionParams[key] === undefined) {
+                if (debug) {
+                    console.log('Removing isolated store', key)
+                }
+                store.unregisterModule(isolates[key])
+                delete isolates[key]
+                // remove stored params as the isolated store has been destroyed
+                if (storedActionParamsContainer[0][key] !== undefined) {
+                    delete storedActionParamsContainer[0][key]
+                }
             }
         })
 
         // clean up all timers that are no more used in path segments
-        Object.keys(reloaderTimers).forEach(name => {
-            if (newActionParams[name] === undefined) {
-                clearInterval(reloaderTimers[name])
-                delete reloaderTimers[name]
+        Object.keys(reloaderTimers).forEach(key => {
+            if (newActionParams[key] === undefined) {
+                if (debug) {
+                    console.log('Removing timer', key)
+                }
+                clearInterval(reloaderTimers[key])
+                delete reloaderTimers[key]
             }
         })
 
         // store parameters for the next route change
         storedActionParamsContainer[0] = { ...storedActionParams, ...newActionParams }
-        console.log('calling next')
+        if (debug) {
+            console.log('calling next, stored action params', storedActionParamsContainer[0])
+        }
+
         next()
     }
 
-    function afterEachHandler (to, from) {
-        Vue.nextTick(function () {
-            console.log('after each', to.matched)
-            for (const match of to.matched) {
-                console.log('Instances', match.instances)
-                if (match.instances && match.instances.default && match.injects) {
-                    const inst = match.instances.default
-                    Object.keys(match.injects).forEach(k => {
-                        inst[k] = match.injects[k]
-                    })
-                    console.log(inst)
-                }
-            }
-        })
-    }
-
     router.beforeEach(beforeEachHandler)
-
-    if (injection) {
-        router.afterEach(afterEachHandler)
-    }
 }
 
 export { registerPreloader }
