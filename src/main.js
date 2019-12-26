@@ -2,11 +2,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { registerPreloader } from './library/preloader'
+import VuexPreloader from './library'
 
 Vue.config.productionTip = false
 
-registerPreloader(router, store, {
+Vue.use(VuexPreloader, {
+    router, store,
     injection: true,
     debug: false
 })

@@ -21,14 +21,20 @@ yarn add @oarepo/vuex-preloader
 In main.js/quasar boot, register the preloader: 
 
 ```javascript
-import { registerPreloader } from '@oarepo/vuex-preloader'
+import VuexPreloader from '@oarepo/vuex-preloader'
 
 function errorHandler({router, route, pathSegment, exception}) { 
     console.error('Exception detected')
     return '/error/404'
 }
-
-registerPreloader(router, store, {errorHandler, debug: true})
+Vue.use(
+    VuexPreloader, 
+    {
+        router, store, 
+        errorHandler, 
+        debug: true
+    }
+)
 ```  
 
 In routes, make sure that *routes are named* and add the ``meta`` sections:
