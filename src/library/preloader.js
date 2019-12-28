@@ -134,8 +134,8 @@ const registerPreloader = function (router, store, {
                 continue
             }
             let extraProps = match.props
-            if (extraProps instanceof Function) {
-                extraProps = extraProps(to)
+            if (extraProps.default instanceof Function) {
+                extraProps = { ...extraProps, ...extraProps.default(to) }
             }
             // the ``preloaders`` are either a single object or an array. If a single object, cast it to an array
             for (const preloader of (Array.isArray(preloaders) ? preloaders : [preloaders])) {
