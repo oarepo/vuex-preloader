@@ -1,11 +1,11 @@
 import Vue from 'vue'
 
-function extractActionParams (preloader, match, route) {
+function extractActionParams (preloader, match, route, extraProps) {
     let actionParams = {}
     const params = preloader.params || null
     if (params) {
         Object.keys(params).forEach(k => {
-            actionParams[params[k]] = route.params[k]
+            actionParams[params[k]] = route.params[k] || extraProps[k]
         })
     } else {
         actionParams = {
@@ -133,10 +133,14 @@ const registerPreloader = function (router, store, {
             if (preloaders === undefined) {
                 continue
             }
+            let extraProps = match.props
+            if (extraProps instanceof Function) {
+                extraProps = extraProps(to)
+            }
             // the ``preloaders`` are either a single object or an array. If a single object, cast it to an array
             for (const preloader of (Array.isArray(preloaders) ? preloaders : [preloaders])) {
 
-                const actionParams = extractActionParams(preloader, match, to)
+                const actionParams = extractActionParams(preloader, match, to, extraProps)
                 try {
                     // run the preloader. It returns an object {key: actionParams} as a retval.
                     // Extend the new action params with the retval - this way we know which actions
