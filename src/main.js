@@ -9,7 +9,7 @@ Vue.config.productionTip = false
 Vue.use(VuexPreloader, {
     router, store,
     injection: true,
-    debug: false
+    debug: true
 })
 
 new Vue({

@@ -1,5 +1,31 @@
 # @oarepo/vuex-preloader
 
+A url-parameters based preloader for vuex stores
+
+<p align="center">
+    <a href="https://travis-ci.org/oarepo/vuex-preloader" target="_blank">
+        <img src="https://img.shields.io/travis/oarepo/vuex-preloader"
+            alt="travis build stat"></a>
+    <a href="https://www.npmjs.com/package/@oarepo/vuex-preloader" target="_blank">
+        <img src="https://img.shields.io/npm/v/@oarepo/vuex-preloader"
+            alt="npm version"></a>
+</p>
+
+<!-- toc -->
+
+- [What it does](#what-it-does)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Multiple loaders on one path](#multiple-loaders-on-one-path)
+- [Single store on multiple paths](#single-store-on-multiple-paths)
+- [Reloading](#reloading)
+- [Store name injection](#store-name-injection)
+- [Project setup](#project-setup)
+- [Sample application](#sample-application)
+  * [Compile the library](#compile-the-library)
+
+<!-- tocstop -->
+
 ## What it does
 
 This library provides a preloader that listens on router changes (beforeEach)
@@ -103,6 +129,7 @@ Parameters inside ``meta.preloader``:
       is the name of path parameter, the value is the name of the passed parameter
       to the ``action``. If not filled, all path parameters are passed to the store's 
       ``action``.    
+   * ``props`` - extra static props that will be passed to the store
    * ``reload`` - if set to ``true``, always dispatch the ``action``. 
       If set to ``false`` (default), dispatch the ``action`` only when the parameters
       to the ``action`` call have changed.
@@ -149,6 +176,41 @@ const routes = [
                     articleId: 'id'
                 }
             }]
+        }
+    }
+]
+```
+
+## Single store on multiple paths
+
+For cases where two paths reference the same loader, the loader would not reload as the remembered
+previous state is recorded on each path and so the loader does not know that a store
+content's has changed.
+
+To fix this issue, manually set on all preloaders the same ``key`` property, such as:
+
+```javascript
+const routes = [
+    {
+        path: '/:articleId',
+        name: 'article1',
+        component: () => Article1,
+        meta: {
+            preloader: {
+                'key': 'article',
+                // extra params here
+            }
+        }
+    },
+    {
+        path: '/:articleId',
+        name: 'article2',
+        component: () => Article2,
+        meta: {
+            preloader: {
+                'key': 'article',
+                // extra params here
+            }
         }
     }
 ]

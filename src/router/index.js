@@ -33,6 +33,9 @@ const routes = [
                 'expiration': 20
             }
         },
+        props: {
+            test: 'abc'
+        },
         children: [
             {
                 path: 'comments',

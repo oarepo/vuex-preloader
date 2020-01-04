@@ -9,6 +9,7 @@ function extractActionParams (preloader, match, route, extraProps) {
         })
     } else {
         actionParams = {
+            ...extraProps,
             ...route.params
         }
     }
@@ -133,14 +134,21 @@ const registerPreloader = function (router, store, {
             if (preloaders === undefined) {
                 continue
             }
-            let extraProps = match.props
-            if (extraProps.default instanceof Function) {
-                extraProps = { ...extraProps, ...extraProps.default(to) }
+            let extraProps = {}
+            if (match.props) {
+                if (match.props.default instanceof Function) {
+                    extraProps = { ...extraProps.default(to) }
+                } else if (Object(match.props.default) === match.props.default) {
+                    extraProps = { ...extraProps.default }
+                }
             }
             // the ``preloaders`` are either a single object or an array. If a single object, cast it to an array
             for (const preloader of (Array.isArray(preloaders) ? preloaders : [preloaders])) {
 
-                const actionParams = extractActionParams(preloader, match, to, extraProps)
+                const actionParams = extractActionParams(preloader, match, to, {
+                    ...(preloader.props || {}),
+                    ...extraProps
+                })
                 try {
                     // run the preloader. It returns an object {key: actionParams} as a retval.
                     // Extend the new action params with the retval - this way we know which actions
@@ -198,6 +206,9 @@ const registerPreloader = function (router, store, {
     }
 
     router.beforeEach(beforeEachHandler)
+    return {
+        beforeEachHandler
+    }
 }
 
 export { registerPreloader }

@@ -53,5 +53,16 @@ module.exports = {
         'no-underscore-dangle': ['off'],
         'class-methods-use-this': ['off'],
         'padded-blocks': ['off'],
-    }
+    },
+
+    overrides: [
+        {
+            files: [
+                '**/__tests__/*.{j,t}s?(x)'
+            ],
+            env: {
+                mocha: true
+            }
+        }
+    ]
 };
