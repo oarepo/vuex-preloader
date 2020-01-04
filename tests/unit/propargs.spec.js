@@ -10,7 +10,7 @@ chai.use(sinonChai)
 
 const sandbox = sinon.createSandbox()
 
-describe('No options to store', () => {
+describe('Testing that extra preloader props are propagated', () => {
 
     afterEach(() => {
         sandbox.restore()

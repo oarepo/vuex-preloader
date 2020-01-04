@@ -10,7 +10,7 @@ chai.use(sinonChai)
 
 const sandbox = sinon.createSandbox()
 
-describe('No options to store', () => {
+describe('Testing that path arguments are propagated', () => {
 
     afterEach(() => {
         sandbox.restore()
