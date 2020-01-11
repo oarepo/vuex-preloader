@@ -27,6 +27,7 @@ const registerPreloader = function (router, store, {
     // a container with path segment name => jsonified store action parameters.
     // if these change in navigation, a reload on store is called
     const storedActionParamsContainer = [{}]
+    const storedInjectedParamsContainer = {}
 
     // a path segment name => dynamic store name mapping
     const isolates = {}
@@ -82,6 +83,14 @@ const registerPreloader = function (router, store, {
             skipReloading = false
         }
         if (skipReloading) {
+            if (injection) {
+                if (debug) {
+                    console.log('Injecting cache to component', injects)
+                }
+                Object.keys(storedInjectedParamsContainer[key] || {}).forEach(k => {
+                    to.params[k] = storedInjectedParamsContainer[key][k]
+                })
+            }
             return { [key]: storedActionParams[key] }
         }
 
@@ -115,8 +124,13 @@ const registerPreloader = function (router, store, {
             reloaderTimers[key] = setInterval(runReload, reloadInterval * 1000)
         }
         if (injection) {
+            if (debug) {
+                console.log('Injecting to component', injects)
+            }
+            storedInjectedParamsContainer[key] = {}
             Object.keys(injects).forEach(k => {
                 to.params[k] = injects[k]
+                storedInjectedParamsContainer[key][k] = injects[k]
             })
         }
         if (debug) {
@@ -181,6 +195,9 @@ const registerPreloader = function (router, store, {
                 // remove stored params as the isolated store has been destroyed
                 if (storedActionParamsContainer[0][key] !== undefined) {
                     delete storedActionParamsContainer[0][key]
+                }
+                if (storedInjectedParamsContainer[key] !== undefined) {
+                    delete storedInjectedParamsContainer[key]
                 }
             }
         })
