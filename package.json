@@ -1,6 +1,6 @@
 {
   "name": "@oarepo/vuex-preloader",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Preloader library (not only) for OARepo",
   "author": "Miroslav Simek <simeki@vscht.cz>",
   "scripts": {
