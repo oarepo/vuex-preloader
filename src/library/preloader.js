@@ -59,7 +59,14 @@ const registerPreloader = function (router, store, {
             console.log(`preloader will use key ${key} for route segment`, match)
         }
 
-        const serializedParams = JSON.stringify(actionParams)
+        const serializedParams = JSON.stringify(
+            actionParams,
+            (key, value) => {
+                if (key.toString().substring(0, 1) === '_') {
+                    return undefined
+                }
+                return value
+            })
         if (debug) {
             console.log('checking if reload is needed: serialized params ',
                 serializedParams, 'stored params', storedActionParams[key],
