@@ -2,6 +2,11 @@ import Vue from 'vue'
 
 function extractActionParams (preloader, match, route, extraProps) {
     let actionParams = {}
+
+    if (preloader.query) {
+        actionParams['query'] = route.query
+    }
+
     const params = preloader.params || null
     if (params) {
         Object.keys(params).forEach(k => {
@@ -12,9 +17,6 @@ function extractActionParams (preloader, match, route, extraProps) {
             ...extraProps,
             ...route.params
         }
-    }
-    if (preloader.query) {
-        actionParams['query'] = route.query
     }
     return actionParams
 }
