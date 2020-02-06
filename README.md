@@ -257,6 +257,62 @@ registerPreloader(router, store, erorrHandler, {injection: true})
 Implicitly ``storeName`` is injected into the component's props. When using isolated factory,
 all properties returned by the factory are injected as well.
 
+## ``vue-query-synchronizer`` integration
+
+It is possible to use this library together with ``vue-query-synchronizer``. This way
+the default values (such as pageSize=10, if not found in query) are stored in one place
+in query synchronizer. An example ('1' is the default value of ``filter``):
+
+```javascript
+routePart = {
+        path: '/vue-query-synchronizer',
+        name: 'vueqs',
+        component: VueQS,
+        meta: {
+            preloader: {
+                'store': 'qs',
+            }
+        },
+        props: query([
+            'string:filter:1',
+        ], {}, {
+            passParams: true,
+        })
+    }
+```
+
+The library can also enable you to store/retrieve the default value to localStorage/server
+so that when user opens the application he sees his previous preset values (such as
+default number of table rows):
+
+```javascript
+routePart = {
+        path: '/vue-query-synchronizer',
+        name: 'vueqs',
+        component: VueQS,
+        meta: {
+            preloader: {
+                'store': 'qs',
+            }
+        },
+        props: query([
+            'number:pageSize',
+        ], {}, {
+            passParams: true,
+            onInit (params) {
+                params[0].defaultValue = window.localStorage.getItem('pageSize') || '10'
+                return params
+            },
+            onChange (newQuery, query) {
+                window.localStorage.setItem('pageSize', query.pageSize || '')
+            }
+        })
+    }
+```
+
+See https://github.com/oarepo/vue-query-synchronizer for details on using this library. 
+
+
 ## Project setup
 ```
 yarn install

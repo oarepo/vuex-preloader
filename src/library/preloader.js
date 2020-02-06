@@ -2,7 +2,6 @@ import Vue from 'vue'
 
 function extractActionParams (preloader, match, route, extraProps) {
     let actionParams = {}
-
     if (preloader.query) {
         actionParams['query'] = route.query
     }
@@ -14,8 +13,8 @@ function extractActionParams (preloader, match, route, extraProps) {
         })
     } else {
         actionParams = {
-            ...extraProps,
-            ...route.params
+            ...route.params,
+            ...extraProps
         }
     }
     return actionParams
@@ -61,14 +60,7 @@ const registerPreloader = function (router, store, {
             console.log(`preloader will use key ${key} for route segment`, match)
         }
 
-        const serializedParams = JSON.stringify(
-            actionParams,
-            (key, value) => {
-                if (key.toString().substring(0, 1) === '_') {
-                    return undefined
-                }
-                return value
-            })
+        const serializedParams = JSON.stringify(actionParams)
         if (debug) {
             console.log('checking if reload is needed: serialized params ',
                 serializedParams, 'stored params', storedActionParams[key],

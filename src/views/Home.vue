@@ -5,6 +5,7 @@
     <div v-for="article of articles" :key="article.code">
         <router-link :to="{name: 'article', params: {articleId: article.code}}">{{article.title}}</router-link>
     </div>
+    <div><router-link :to="{name: 'vueqs'}">vue-query-synchronizer integration demo</router-link></div>
 </div>
 </template>
 

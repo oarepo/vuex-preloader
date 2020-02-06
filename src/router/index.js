@@ -4,6 +4,8 @@ import Home from '../views/Home.vue'
 import Article from '../views/Article.vue'
 import Comments from '../views/Comments.vue'
 import {commentStoreFactory} from '../store/comments'
+import VueQS from '../views/VueQS'
+import { query } from '@oarepo/vue-query-synchronizer'
 
 Vue.use(VueRouter)
 
@@ -18,6 +20,29 @@ const routes = [
             }
         },
         props: true
+    },
+    {
+        path: '/vue-query-synchronizer',
+        name: 'vueqs',
+        component: VueQS,
+        meta: {
+            preloader: {
+                'store': 'qs',
+            }
+        },
+        props: query([
+            'string:filter:1',
+        ], {}, {
+            passParams: true,
+            onInit (params) {
+                const defaultValue = window.localStorage.getItem('filter') || ''
+                params[0].defaultValue = defaultValue || ''
+                return params
+            },
+            onChange (newQuery, query) {
+                window.localStorage.setItem('filter', query.filter || '')
+            }
+        })
     },
     {
         path: '/:articleId',
