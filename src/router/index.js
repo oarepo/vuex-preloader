@@ -32,6 +32,7 @@ const routes = [
         },
         props: query([
             'string:filter:1',
+            'number:page:1'
         ], {}, {
             passParams: true,
             onInit (params) {
